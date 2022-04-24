@@ -1,5 +1,7 @@
 # Exauth
 
+[YouTube Playlist](https://www.youtube.com/playlist?list=PLXv5LxnUqHxNcQo-yJnPCvfVP5OqS9IoM)
+
 - Users
   - Register
   - Login
