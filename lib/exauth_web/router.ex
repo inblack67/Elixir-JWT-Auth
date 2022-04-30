@@ -10,6 +10,7 @@ defmodule ExauthWeb.Router do
 
     get "/ping", AuthController, :ping
     post "/register", AuthController, :register
+    post "/login", AuthController, :login
   end
 
   # Enables LiveDashboard only for development

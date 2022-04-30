@@ -2,6 +2,8 @@ defmodule ExauthWeb.AuthController do
   use ExauthWeb, :controller
   alias Exauth.Accounts
   alias ExauthWeb.Utils
+  alias Exauth.Accounts.User
+  alias ExauthWeb.JWTToken
 
   def ping(conn, _params) do
     conn
@@ -18,6 +20,27 @@ defmodule ExauthWeb.AuthController do
 
       _ ->
         conn |> render("error.json", %{error: Utils.internal_server_error()})
+    end
+  end
+
+  def login(conn, %{"username" => username, "password" => password}) do
+    with %User{} = user <- Accounts.get_user_by_username(username),
+         true <- Pbkdf2.verify_pass(password, user.password) do
+      signer =
+        Joken.Signer.create(
+          "HS256",
+          "zrhYVRfAP4uNwYVPxrngiqhrlJhB/Wd2REcf9W870RL2O+Mq/bfVVZl0rJWT2WFz"
+        )
+
+      extra_claims = %{user_id: user.id}
+      {:ok, token, _claims} = JWTToken.generate_and_sign(extra_claims, signer)
+
+      {:ok, claims} = JWTToken.verify_and_validate(token, signer)
+      IO.inspect(claims)
+
+      conn |> render("login.json", %{success: true, message: "Login Successful", token: token})
+    else
+      _ -> conn |> render("error.json", %{error: Utils.invalid_credentials()})
     end
   end
 end
