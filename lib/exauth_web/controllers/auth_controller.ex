@@ -5,6 +5,7 @@ defmodule ExauthWeb.AuthController do
   alias Exauth.Accounts.User
   alias ExauthWeb.JWTToken
 
+  @spec ping(Plug.Conn.t(), any) :: Plug.Conn.t()
   def ping(conn, _params) do
     conn
     |> render("ack.json", %{success: true, message: "Pong"})
@@ -35,12 +36,13 @@ defmodule ExauthWeb.AuthController do
       extra_claims = %{user_id: user.id}
       {:ok, token, _claims} = JWTToken.generate_and_sign(extra_claims, signer)
 
-      {:ok, claims} = JWTToken.verify_and_validate(token, signer)
-      IO.inspect(claims)
-
       conn |> render("login.json", %{success: true, message: "Login Successful", token: token})
     else
       _ -> conn |> render("error.json", %{error: Utils.invalid_credentials()})
     end
+  end
+
+  def get(conn, _params) do
+    conn |> render("data.json", %{data: conn.assigns.current_user})
   end
 end

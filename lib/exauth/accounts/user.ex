@@ -2,6 +2,7 @@ defmodule Exauth.Accounts.User do
   use Ecto.Schema
   import Ecto.Changeset
 
+    @derive {Jason.Encoder, except: [:__meta__]}
   schema "users" do
     field :email, :string
     field :password, :string

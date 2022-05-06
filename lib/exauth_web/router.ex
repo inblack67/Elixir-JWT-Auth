@@ -5,9 +5,18 @@ defmodule ExauthWeb.Router do
     plug :accepts, ["json"]
   end
 
+  pipeline :auth do
+    plug ExauthWeb.JWTAuthPlug
+  end
+
+  scope "/api/auth", ExauthWeb do
+    pipe_through :auth
+    get "/", AuthController, :get
+    get "/ping", AuthController, :ping
+  end
+
   scope "/api", ExauthWeb do
     pipe_through :api
-
     get "/ping", AuthController, :ping
     post "/register", AuthController, :register
     post "/login", AuthController, :login
