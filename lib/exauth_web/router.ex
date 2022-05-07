@@ -13,6 +13,7 @@ defmodule ExauthWeb.Router do
     pipe_through :auth
     get "/", AuthController, :get
     get "/ping", AuthController, :ping
+    delete "/", AuthController, :delete
   end
 
   scope "/api", ExauthWeb do

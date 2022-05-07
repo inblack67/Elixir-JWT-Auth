@@ -2,6 +2,7 @@ defmodule ExauthWeb.JWTAuthPlug do
   import Plug.Conn
   alias Exauth.Accounts
   alias Exauth.Accounts.User
+  alias Exauth.AuthTokens
 
   def init(opts), do: opts
 
@@ -20,9 +21,14 @@ defmodule ExauthWeb.JWTAuthPlug do
         )
 
       with {:ok, %{"user_id" => user_id}} <-
-             ExauthWeb.JWTToken.verify_and_validate(token, signer),
+           ExauthWeb.JWTToken.verify_and_validate(token, signer),
            %User{} = user <- Accounts.get_user(user_id) do
-        conn |> assign(:current_user, user)
+
+            if AuthTokens.get_auth_token_by_token(token) != nil do
+              conn |> put_status(401) |> halt
+            else
+              conn |> assign(:current_user, user)
+            end
       else
         {:error, _reason} -> conn |> put_status(401) |> halt
         _ -> conn |> put_status(401) |> halt

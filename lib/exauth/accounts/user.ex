@@ -1,12 +1,15 @@
 defmodule Exauth.Accounts.User do
   use Ecto.Schema
   import Ecto.Changeset
+  alias Exauth.AuthTokens.AuthToken
 
-    @derive {Jason.Encoder, except: [:__meta__]}
+  @derive {Jason.Encoder, except: [:__meta__, :auth_tokens, :password]}
   schema "users" do
     field :email, :string
     field :password, :string
     field :username, :string
+
+    has_many :auth_tokens, AuthToken
 
     timestamps()
   end

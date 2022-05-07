@@ -36,12 +36,20 @@ defmodule Exauth.Accounts do
 
   """
   def get_user!(id), do: Repo.get!(User, id)
-  def get_user(id), do: Repo.get(User, id)
+  def get_user(id) do
+    from(
+      u in User,
+      where: u.id == ^id,
+    select: [:id, :inserted_at, :updated_at, :email, :username]
+    )
+    |> Repo.one()
+  end
 
   def get_user_by_username(username) do
     from(
       u in User,
-      where: u.username == ^username
+      where: u.username == ^username,
+    select: [:id, :inserted_at, :updated_at]
     )
     |> Repo.one()
   end
